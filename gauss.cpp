@@ -1,28 +1,40 @@
 #include <iostream>
+#include <cmath>
 
 double** gen(double** A, int n) {
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            std::cout << "a[" << i + 1 << "][" << j + 1 << "] = ";
-            std::cin >> A[i][j];
+    if (n <= 4) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                std::cout << "a[" << i + 1 << "][" << j + 1 << "] = ";
+                std::cin >> A[i][j];
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            std::cout << "b[" << i + 1 << "] = ";
+            std::cin >> A[i][n + 1];
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                std::cout << A[i][j] << "*x" << j + 1;
+                if (j < n - 1) std::cout << " + ";
+            }
+            std::cout << " = " << A[i][n + 1];
+            std::cout << "" << std::endl;
         }
     }
-    for (int i = 0; i < n; i++) {
-        std::cout << "b[" << i + 1 << "] = ";
-        std::cin >> A[i][n + 1];
-    }
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            std::cout << A[i][j] << "*x" << j + 1;
-            if (j < n - 1) std::cout << " + ";
+    else {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                A[i][j] = rand() % 100 + 1;
+            }
         }
-        std::cout << " = " << A[i][n + 1];
-        std::cout << "" << std::endl;
+        for (int i = 0; i < n; i++) {
+            A[i][n + 1] = rand() % 100 + 1;
+        }
+        std::cout << "ћатрица " << n << "x" << n << " заполненна€ случайными значени€ми от 1 до 100" << std::endl;
     }
-    std::cout << "\n";
-
     return A;
 }
 
@@ -70,32 +82,38 @@ double* gauss(double** A, int n) {
         k++;
     }
 
-    std::cout << "\n";
-
+    double* c = new double[n];
+    for (int i = 0; i < n; i++) {
+        c[i] = A[i][n + 1];
+    }
 
     for (k = n - 1; k >= 0; k--) {
         x[k] = A[k][n + 1];
-        for (int i = 0; i < k; i++)
+        for (int i = 0; i < k; i++) {
             A[i][n + 1] = A[i][n + 1] - A[i][k] * x[k];
+        }
     }
 
+    for (int i = 0; i < n; i++) {
+        A[i][n + 1] = c[i];
+    }
 
     return x;
 }
 
-bool check(double** A, int n, double* x) {
-    const double zero{ 0.00001 };
+double check(double** A, int n, double* x) {
+    double max{ 0.0 };
 
     for (int i = 0; i < n; i++) {
         double a{};
+
         for (int j = 0; j < n; j++) {
-            a = A[i][j] * x[j];
+            a = a + (A[i][j] * x[j]);
         }
-        double b = a - A[i][n + 1];
-        if (b > zero) {
-            return false;
+        double c = abs(A[i][n + 1] - a);
+        if (c > max) {
+            max = c;
         }
     }
-    return true;
+    return max;
 }
-
